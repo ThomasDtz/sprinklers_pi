@@ -87,6 +87,12 @@ package: clean
 	tar -C/tmp -czvhf $(LIBNAME)-$(VERSION).tar.gz $(LIBNAME)-$(VERSION)
 	rm -rf /tmp/$(LIBNAME)-$(VERSION)
 
+update:
+	sudo /etc/init.d/sprinklers_pi stop
+	make -lwiringPi
+	sudo make install
+	sudo /etc/init.d/sprinklers_pi start
+
 version:
 	@echo $(VERSION)
 
