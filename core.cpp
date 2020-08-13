@@ -95,7 +95,7 @@ uint8_t ZoneToIOMap[] = {22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
 #if defined(GREENIQ)
 uint8_t ZoneToIOMap[] = {5, 7, 0, 1, 2, 3, 4};
 #else
-uint8_t ZoneToIOMap[] = {21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35};
+uint8_t ZoneToIOMap[] = {21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36};
 //uint8_t ZoneToIOMap[] = {0, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34/*, 35*/};
 //uint8_t ZoneToIOMap[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 #define SR_CLK_PIN  7
@@ -140,33 +140,6 @@ static void io_latch()
 			else
 				digitalWrite(ZoneToIOMap[i], (outState&(0x01<<i))?0:1);
 				
-            // for pump activation wait 1 sec. to come up
-         /**/
-            if ((i == 0) && ((outState & 0x01) == 0x01))
-            {
-
-                //struct timeval t1, t2;
-                //gettimeofday(&t1, NULL);
-				/*
-                do
-                {
-                    gettimeofday(&t2, NULL);
-                } while ( (t2.tv_sec - t1.tv_sec) < 3);
-				*/
-
-                //trace(F("delay!!!\n"));
-                //delay(1);
-                //usleep(1);
-                /*
-                for (int k=0; k < 100000; k++)
-                {
-                    for (int l=0; l < 100000; l++)
-                    {
-                    }
-                }
-                */
-            }
-        /**/
 		}
 		break;
 
