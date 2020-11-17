@@ -148,14 +148,11 @@ Weather::ReturnVals OpenWeather::InternalGetVals(const Weather::Settings & setti
 		short precip_today = vals.precipi;
 		short uv_today = vals.UV;
 
-		//trace("local hour: %d\n", nntpTimeServer.LocalHour());
-		if (nntpTimeServer.LocalHour() >= 8) {
-            trace("Get Today's Weather for the hours between midnight and now\n");
-            GetData(settings, m_openWeatherAPIHost, now - 8 * 3600, &vals);
-            if (vals.valid) {
-                // add precip to today's values
-                precip_today += vals.precipi;
-            }
+		trace("Get Today's Weather for the hours between midnight and now\n");
+		GetData(settings, m_openWeatherAPIHost, now, &vals);
+		if (vals.valid) {
+			// add precip to today's values
+			precip_today += vals.precipi;
 		}
 
 		// yesterday
@@ -167,7 +164,11 @@ Weather::ReturnVals OpenWeather::InternalGetVals(const Weather::Settings & setti
 			vals.UV = uv_today;
 		}
 	}
-	
+	static char strDate[300];
+	struct tm * ti = localtime (&now);
+	snprintf(strDate, sizeof(strDate), "%s  %.2d.%.2d.%.4d %.2d:%.2d:%.2d ", m_openWeatherAPIHost, ti->tm_mday, ti->tm_mon+1, 1900 + ti->tm_year, ti->tm_hour, ti->tm_min, ti->tm_sec);
+	vals.resolvedIP = strDate;
+
 	return vals;
 }
 

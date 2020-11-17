@@ -6,7 +6,7 @@
 #define SPRINKLERS_PI_CONFIG_H
 
 // Uncomment to display times in 24H format
-//#define CLOCK_24H 1
+#define CLOCK_24H 1
 
 // Uncomment to use GreenIQ V2 board
 //#define GREENIQ 1
@@ -30,7 +30,7 @@
  *************************************************/
 
 // Open Weather https://openweathermap.org/darksky-openweather
-//#define WEATHER_OPENWEATHER
+#define WEATHER_OPENWEATHER
 
 // Aeris Weather https://www.aerisweather.com
 //#define WEATHER_AERIS
