@@ -1,0 +1,59 @@
+OpenWeather
+
+appid = cf43d8434ebb694a27f7e5b4b9af1dbf
+
+OneCall mit Timestamp (24h dieses Tages von 0:00 bis 24:00)
+https://api.openweathermap.org/data/2.5/onecall/timemachine?appid=cf43d8434ebb694a27f7e5b4b9af1dbf&lat=52.00&lon=10.9&dt=<TS>&units=imperial
+
+OneCall ohne Timestamp (aktuell nächsten 24h)
+https://api.openweathermap.org/data/2.5/onecall?appid=cf43d8434ebb694a27f7e5b4b9af1dbf&lat=52.00&lon=10.9&units=imperial
+
+
+curl -sS -o d:/tmp/openWeather.json 'https://api.openweathermap.org/data/2.5/onecall/timemachine?appid=cf43d8434ebb694a27f7e5b4b9af1dbf&lat=52.00&lon=10.9dt=1605550457&units=imperial'
+
+
+
+
+
+scale = 100 + humid_fact + temp_fact + rain_fact      (Range 0 - 200)
+
+	hunid_fact = 30 - ((maxhumidity + minhumidity) / 2)
+	temp_fact  = 4 * (meantempi - 70)
+	rain_fact  = (precipi + precip_today) * -2
+	
+	
+		maxhumidity 		[%]		Vortag 24h
+		minhumidity 		[%]		Vortag 24h
+		meantempi			[F]		Vortag 24h
+		precipi				[inch] * 100	Vortag 24h
+		precip_today		[inch] * 100	nächsten 24h + heute
+		windmph				[mph] * 10	Vortag 24h
+		uv			     		 * 10	nächsten 24h
+
+
+
+
+
+
+
+
+
+
+https://knx-user-forum.de/forum/%C3%B6ffentlicher-bereich/knx-eib-forum/29458-logik-f%C3%BCr-gartenbew%C3%A4sserung
+Grundwert=0.3     (muss kalibriert werden, s.u. Richtwert: 1/7 der gewünschten Niederschlagsmenge in cm bei 30°C)
+Mindestwert=23 (muss kalibriert werden)
+Durchfluss=1.500 (m³/h)
+Flaehe=400 (m²)
+cm_per_min=Durchfluss/Flaeche/60
+
+Niederschlagssumme=Niederschlag_Gestern+Niederschlag_Heute+Niederschlag_Morgen
+Durschnittstemperatur=avg(Temp_heute, Temp_morgen, Temp_Gestern)
+
+SollNiederschlag=(Durschnittstemperatur-Mindesttemp)*Grundwert
+
+Bewaesserungs_Menge=SollNiederschlag-Niederschlagssumme/3
+ 
+If Bewaesserungs_Menge>0
+  Bewaesserungs_Dauer=Bewaesserungs_Menge/cm_per_min
+  
+  
