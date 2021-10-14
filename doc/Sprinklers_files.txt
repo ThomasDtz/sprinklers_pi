@@ -1,0 +1,36 @@
+File locations
+-------------------
+Log Files: 
+/var/log/sprinklers_pi
+
+Settings:  
+/usr/local/etc/sprinklers_pi/settings
+
+Running Zone Database:
+/usr/local/etc/sprinklers_pi/db.sql
+
+Executable:
+/usr/local/sbin/sprinklers_pi
+
+Code:
+/home/pi/sprinklers_pi
+
+share:
+/home/pi/share
+
+OpenWeather appid:
+cf43d8434ebb694a27f7e5b4b9af1dbf
+
+OpenWeather location:
+52.0,10.9
+
+
+Start
+---------------------------
+/etc/init.d/sprinklers_pi  start
+                           start-trace
+						   stop
+						   
+zum Tracing in /var/log/sprinklers_pi muß der Daemon einmal mit "start-trace" gestartet worden sein.
+siehe sprinklers_init.d.sh (wird bei Installation nach /etc/init.d/sprinklers_pi kopiet
+
