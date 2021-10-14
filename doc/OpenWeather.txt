@@ -12,9 +12,15 @@ https://api.openweathermap.org/data/2.5/onecall?appid=cf43d8434ebb694a27f7e5b4b9
 curl -sS -o d:/tmp/openWeather.json 'https://api.openweathermap.org/data/2.5/onecall/timemachine?appid=cf43d8434ebb694a27f7e5b4b9af1dbf&lat=52.00&lon=10.9dt=1605550457&units=imperial'
 
 
+Aufruf:
+-------
+GetVals()
+	InternalGetVals()
+		GetData()
+			ParseResponse()
 
-
-
+Formel:
+-------
 scale = 100 + humid_fact + temp_fact + rain_fact      (Range 0 - 200)
 
 	hunid_fact = 30 - ((maxhumidity + minhumidity) / 2)
