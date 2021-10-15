@@ -75,6 +75,13 @@ if [ $ROWS -gt 1 ] ; then
   echo "-----------------------------" >> $TMPFILE
   #print each zones runtime
   for i in {1..7} ; do
+
+    WUN=`sqlite3 $DB "SELECT AVG(wunderground) FROM zonelog WHERE date > $TIME AND zone = $i AND wunderground >= 0" | tr -d '\n'`
+    if [ "x$WUN" == "x" ] ; then
+      WUN=0
+    fi
+    WUN2=$(printf "%3.0f" "$WUN")
+
     LOG=`sqlite3 $DB "SELECT SUM(duration) FROM zonelog WHERE zone = $i AND date > $TIME" | tr -d '\n'`
     if [ "x$LOG" = "x" ] ; then
 	LOG=0
@@ -82,7 +89,7 @@ if [ $ROWS -gt 1 ] ; then
 
     LOG_MINUTES=`calc "scale=2; $LOG / 60"`
 
-    ZONEINFO="$(printf "%6.2f" "$LOG_MINUTES") [min]\t${zones[$i]}"
+    ZONEINFO="$(printf "%6.2f" "$LOG_MINUTES") [min]\tWAdj: $WUN2 %\t${zones[$i]}"
     echo -e "$ZONEINFO" >> $TMPFILE
 
  #   ZONENAME=$(printf "%-15s" "${zones[$i]}")
