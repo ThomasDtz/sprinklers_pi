@@ -58,7 +58,7 @@ echo -e "Sprinkler Report for $HOURS hours preceeding\n\r$DATE2\n" > $TMPFILE
 
 #check if any zones ran
 ROWS=`sqlite3 $DB "SELECT COUNT(*) FROM zonelog WHERE date > $TIME" | tr -d '\n'`
-if [ $ROWS -gt 1 ] ; then
+if [ $ROWS -gt 0 ] ; then
   #get average seasonal adjustment
   SEASON=`sqlite3 $DB "SELECT AVG(seasonal) FROM zonelog WHERE date > $TIME AND seasonal >= 0" | tr -d '\n'`
   if [ "x$SEASON" != "x" ] ; then
@@ -67,11 +67,11 @@ if [ $ROWS -gt 1 ] ; then
   fi
   
   #get average wunderground adjustment
-  WUN=`sqlite3 $DB "SELECT AVG(wunderground) FROM zonelog WHERE date > $TIME AND wunderground >= 0" | tr -d '\n'`
-  if [ "x$WUN" != "x" ] ; then
-    WUN2=$(printf "%6.1f" "$WUN")
-    echo "$WUN2 %  Weather Adjustment" >> $TMPFILE
-  fi
+#  WUN=`sqlite3 $DB "SELECT AVG(wunderground) FROM zonelog WHERE date > $TIME AND wunderground >= 0" | tr -d '\n'`
+#  if [ "x$WUN" != "x" ] ; then
+#    WUN2=$(printf "%6.1f" "$WUN")
+#    echo "$WUN2 %  Weather Adjustment" >> $TMPFILE
+#  fi
   echo "-----------------------------" >> $TMPFILE
   #print each zones runtime
   for i in {1..7} ; do
