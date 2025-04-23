@@ -18,6 +18,8 @@
 #include "DarkSky.h"
 #elif defined(WEATHER_OPENWEATHER)
 #include "OpenWeather.h"
+#elif defined(WEATHER_OPENMETEO)
+#include "OpenMeteo.h"
 #else
 #include "Weather.h"
 #endif
@@ -262,6 +264,10 @@ static void JSONSettings(const KVPairs & key_value_pairs, FILE * stream_file)
 	fprintf_P(stream_file, PSTR("\t\"apisecret\" : \"%s\",\n"), settings.apiSecret);
 	fprintf_P(stream_file, PSTR("\t\"loc\" : \"%s\",\n"), settings.location);
 #endif
+#if defined(WEATHER_OPENMETEO)
+	fprintf_P(stream_file, PSTR("\t\"apisecret\" : \"%s\",\n"), settings.apiSecret);
+	fprintf_P(stream_file, PSTR("\t\"loc\" : \"%s\",\n"), settings.location);
+#endif
 	// leave this value last, it has no comma after the value
 	fprintf_P(stream_file, PSTR("\t\"sadj\" : \"%ld\"\n"), (long) GetSeasonalAdjust());
 	fprintf(stream_file, "}");
@@ -280,6 +286,8 @@ static void JSONwCheck(const KVPairs & key_value_pairs, FILE * stream_file)
 	DarkSky w;
 #elif defined(WEATHER_OPENWEATHER)
     OpenWeather w;
+#elif defined(WEATHER_OPENMETEO)
+    OpenMeteo w;
 #else
 	Weather w;
 	noprovider = true;

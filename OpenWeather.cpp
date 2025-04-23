@@ -96,14 +96,14 @@ static void GetData(const Weather::Settings & settings,const char *m_openWeather
 	// get weather json
 	if (timestamp != 0) {
         snprintf(cmd, sizeof(cmd),
-                 "/usr/bin/curl -sS -o /tmp/openWeather.json 'https://%s/data/2.5/onecall/timemachine?appid=%s&lat=%s&lon=%s&dt=%ld&units=imperial'",
+                 "/usr/bin/curl -sS -o /tmp/openWeather.json 'https://%s/data/3.0/onecall/timemachine?appid=%s&lat=%s&lon=%s&dt=%ld&units=imperial'",
                  m_openWeatherAPIHost, settings.apiSecret, lat, lon, timestamp);
     } else {
         snprintf(cmd, sizeof(cmd),
-                 "/usr/bin/curl -sS -o /tmp/openWeather.json 'https://%s/data/2.5/onecall?appid=%s&lat=%s&lon=%s&units=imperial'",
+                 "/usr/bin/curl -sS -o /tmp/openWeather.json 'https://%s/data/3.0/onecall?appid=%s&lat=%s&lon=%s&units=imperial'",
                  m_openWeatherAPIHost, settings.apiSecret, lat, lon);
 	}
-	//trace("cmd: %s\n",cmd);
+	trace("cmd: %s\n",cmd);
 	
 	FILE *fh;
 	char buf[255];
