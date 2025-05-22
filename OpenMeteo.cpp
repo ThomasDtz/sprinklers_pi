@@ -31,131 +31,107 @@ static void ParseResponse(json &data, Weather::ReturnVals * ret)
 	float temp=0;
 	float v = 0;
 	float sum = 0;
-	float tMax = 0;
-	float tMin = 0;
 	float wind = 0;
-	float rain = 0;
+	float uv = 0;
+	float rainYesterday = 0;
+	float rainToday = 0;
 	short i = 0;
 	short size = 0;
 	json day;
 	json aVal;
+	json hours;
 	bool valid = true;
 
 	try
 	{	
 		day = data["daily"];
+		hours = data["hourly"];
 
-		//**********************
-		// temperature max
-		//**********************
+		//*************************************
+		// avarage temperature from yesterday
+		//*************************************
 		sum = 0;
-		aVal = day["temperature_2m_max"];
-		size = aVal.size();
-		if (size > 0)
+		aVal = hours["temperature_2m"];
+		size = aVal.size();  
+		if (size >= 24)
 		{
-			for (i = 0; i < size; i++)
+			// use temperature from yesterday only (0...23)
+			for (i = 0; i < 24; i++)
 			{
 				v = aVal[i];
 				sum += v;
 			}	
-			tMax = sum / size;
+			temp = sum / 24;
 		}	
 		else valid = false;
 
-		//**********************
-		// temperature min
-		//**********************
-		sum = 0;
-		aVal = day["temperature_2m_min"];
-		size = aVal.size();
-		if (size > 0)
-		{
-			for (i = 0; i < size; i++)
-			{
-				v = aVal[i];
-				sum += v;
-			}	
-			tMin = sum / size;		
-			temp = (tMax + tMin) / 2;	
-		}
-		else valid = false;
-
-
-		//**********************
-		// humidity max
-		//**********************
+		
+		//*************************************
+		// max humidity from yesterday
+		//*************************************
 		aVal = day["relative_humidity_2m_max"];
 		size = aVal.size();
 		if (size > 0)
 		{
-			for (i = 0; i < size; i++)
-			{
-				v = aVal[i];
-				if (v > ret->maxhumidity) {
-					ret->maxhumidity = v;
-				}
-			}	
+			ret->maxhumidity = aVal[0];
 		}
 		else valid = false;
 
 		
-		//**********************
-		// humidity min
-		//**********************
+		//*************************************
+		// min humidity from yesterday
+		//*************************************
 		aVal = day["relative_humidity_2m_min"];
 		size = aVal.size();
 		if (size > 0)
 		{
-			for (i = 0; i < size; i++)
-			{
-				v = aVal[i];
-				if (v < ret->minhumidity) {
-					ret->minhumidity = v;
-				}
-			}	
+			ret->minhumidity = aVal[0];
 		}
 		else valid = false;
 
-		//**********************
-		// rain sum
-		//**********************
+		//*************************************
+		// rain total
+		//*************************************
 		sum = 0;
 		aVal = day["rain_sum"];
-		size = aVal.size();
-		if (size > 0)
+		if (aVal.size() == 2)
 		{
-			for (i = 0; i < size; i++)
-			{
-				v = aVal[i];
-				sum += v;
-			}	
-			rain = sum;
-		}
+			rainYesterday = aVal[0]; //total rain yesterday
+			rainToday = aVal[1];     //total rain today
+		}	
 		else valid = false;
 
 
-		//**********************
-		// Wind spead mean
-		//**********************
+		//*************************************
+		// Wind spead mean from yesterday
+		//*************************************
 		sum = 0;
 		aVal = day["wind_speed_10m_mean"];
 		size = aVal.size();
 		if (size > 0)
 		{
-			for (i = 0; i < size; i++)
-			{
-				v = aVal[i];
-				sum += v;
-			}	
-			wind = sum / size;
+			wind = aVal[0];
 		}	
 		else valid = false;
+
+		//*************************************
+		// uv index max from today
+		//*************************************
+		sum = 0;
+		aVal = day["uv_index_max"];
+		if (aVal.size() > 1)
+		{
+			if (!aVal[1].is_null()) uv = aVal[1]; 
+		}	
+		else valid = false;
+
 
 		ret->valid = valid;
 		ret->meantempi = (short) std::round(temp);
 		ret->windmph = (short) std::round(wind * WIND_FACTOR);
-		ret->precipi = (short) std::round(rain * PRECIP_FACTOR); // we want total not average
-		//ret->UV = (short) std::round(data["current"]["uvi"].get<float>() * UV_FACTOR);
+		ret->precipi = (short) std::round(rainYesterday * PRECIP_FACTOR); 
+		ret->precip_today = (short) std::round(rainToday * PRECIP_FACTOR);
+		ret->UV = (short) std::round(uv * UV_FACTOR);
 
 	} catch(std::exception &err) 
 	{
@@ -185,11 +161,11 @@ static void GetData(const Weather::Settings & settings,const char *m_OpenMeteoAP
 	// get weather json
 	if (timestamp != 0) {
         snprintf(cmd, sizeof(cmd),
-                 "/usr/bin/curl -sS -o /tmp/OpenMeteo.json 'https://%s/v1/forecast?latitude=%s&longitude=%s&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,relative_humidity_2m_min,rain_sum,wind_speed_10m_mean&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=Europe%%2FBerlin&past_days=1&forecast_days=1&models=icon_seamless'",
+                 "/usr/bin/curl -sS -o /tmp/OpenMeteo.json 'https://%s/v1/forecast?latitude=%s&longitude=%s&hourly=temperature_2m&daily=relative_humidity_2m_max,relative_humidity_2m_min,rain_sum,wind_speed_10m_mean,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=Europe%%2FBerlin&past_days=1&forecast_days=1&models=icon_seamless'",
                  m_OpenMeteoAPIHost, lat, lon);
     } else {
         snprintf(cmd, sizeof(cmd),
-                 "/usr/bin/curl -sS -o /tmp/OpenMeteo.json 'https://%s/v1/forecast?latitude=%s&longitude=%s&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,relative_humidity_2m_min,rain_sum,wind_speed_10m_mean&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=Europe%%2FBerlin&past_days=1&forecast_days=1&models=icon_seamless'",
+                 "/usr/bin/curl -sS -o /tmp/OpenMeteo.json 'https://%s/v1/forecast?latitude=%s&longitude=%s&hourly=temperature_2m&daily=relative_humidity_2m_max,relative_humidity_2m_min,rain_sum,wind_speed_10m_mean,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=Europe%%2FBerlin&past_days=1&forecast_days=1&models=icon_seamless'",
                  m_OpenMeteoAPIHost, lat, lon);
 	}
 	trace("cmd: %s\n",cmd);
